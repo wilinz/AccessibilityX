@@ -171,10 +171,10 @@ open class AccessibilityxService : AccessibilityService() {
             return null
         }
 
-    fun findOnce(
+    suspend fun findOnce(
         i: Int,
         predicate: (nodeInfo: AccessibilityNodeInfo) -> Boolean
-    ): AccessibilityNodeInfo? {
+    ): AccessibilityNodeInfo? = withContext(Dispatchers.IO) {
 
         var count = 0
         var nodeInfo1: AccessibilityNodeInfo? = null
@@ -196,70 +196,72 @@ open class AccessibilityxService : AccessibilityService() {
             return
         }
 
-        return rootInActiveWindow1?.let { recursiveFind(it);nodeInfo1 }
+        return@withContext rootInActiveWindow1?.let { recursiveFind(it);nodeInfo1 }
     }
 
-    fun findOnce(predicate: (nodeInfo: AccessibilityNodeInfo) -> Boolean): AccessibilityNodeInfo? {
+    suspend fun findOnce(predicate: (nodeInfo: AccessibilityNodeInfo) -> Boolean): AccessibilityNodeInfo? =
+        withContext(Dispatchers.IO) {
 
-        var nodeInfo1: AccessibilityNodeInfo? = null
-        fun recursiveFind(nodeInfo: AccessibilityNodeInfo) {
-            if (nodeInfo1 != null) return
-            for (i in 0 until nodeInfo.childCount) {
-                val node = nodeInfo.getChild(i) ?: continue
-                if (predicate(node)) {
-                    nodeInfo1 = node
-                } else {
-                    recursiveFind(node)
+            var nodeInfo1: AccessibilityNodeInfo? = null
+            fun recursiveFind(nodeInfo: AccessibilityNodeInfo) {
+                if (nodeInfo1 != null) return
+                for (i in 0 until nodeInfo.childCount) {
+                    val node = nodeInfo.getChild(i) ?: continue
+                    if (predicate(node)) {
+                        nodeInfo1 = node
+                    } else {
+                        recursiveFind(node)
+                    }
                 }
+
             }
-
+            return@withContext rootInActiveWindow1?.let {
+                recursiveFind(it)
+                nodeInfo1
+            }
         }
-
-        return rootInActiveWindow1?.let {
-            recursiveFind(it)
-            nodeInfo1
-        }
-    }
 
     private val untilFindOneCoroutines = CopyOnWriteArrayList<Continuation<Unit>>()
 
-    suspend fun untilFindOne(predicate: (nodeInfo: AccessibilityNodeInfo) -> Boolean): AccessibilityNodeInfo {
-        while (true) {
-            val node = findOnce(predicate)
-            if (node == null) {
-                suspendCoroutine {
-                    untilFindOneCoroutines.add(it)
+    suspend fun untilFindOne(predicate: (nodeInfo: AccessibilityNodeInfo) -> Boolean): AccessibilityNodeInfo =
+        withContext(Dispatchers.IO) {
+            while (true) {
+                val node = findOnce(predicate)
+                if (node == null) {
+                    suspendCoroutine {
+                        untilFindOneCoroutines.add(it)
+                    }
+                    continue
                 }
-                continue
+                return@withContext node
             }
-            return node
+            @Suppress("UNREACHABLE_CODE")
+            throw Exception("UNREACHABLE_CODE")
         }
-    }
 
     suspend fun untilFindOne(
         timeout: Long,
         predicate: (nodeInfo: AccessibilityNodeInfo) -> Boolean
-    ): AccessibilityNodeInfo? {
-        return withContext(Dispatchers.IO) {
-            val job: Deferred<AccessibilityNodeInfo?> = async {
-                while (true) {
-                    val node = findOnce(predicate)
-                    if (node == null) {
-                        suspendCoroutine {
-                            untilFindOneCoroutines.add(it)
-                        }
-                        continue
+    ): AccessibilityNodeInfo? = withContext(Dispatchers.IO) {
+        val job: Deferred<AccessibilityNodeInfo?> = async {
+            while (true) {
+                val node = findOnce(predicate)
+                if (node == null) {
+                    suspendCoroutine {
+                        untilFindOneCoroutines.add(it)
                     }
-                    return@async node
+                    continue
                 }
-                return@async null
+                return@async node
             }
-            launch {
-                delay(timeout)
-                if (job.isActive) job.cancel()
-            }
-            job.await()
+            @Suppress("UNREACHABLE_CODE")
+            return@async null
         }
+        launch {
+            delay(timeout)
+            if (job.isActive) job.cancel()
+        }
+        job.await()
     }
 
 
