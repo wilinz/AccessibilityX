@@ -1,7 +1,6 @@
 package com.wilinz.accessbilityx
 
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -12,12 +11,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.lifecycleScope
 import com.wilinz.accessbilityx.app.launchAppByName
-import com.wilinz.accessbilityx.app.launchAppPackage
 import com.wilinz.accessbilityx.ui.theme.AccessbilityXTheme
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
