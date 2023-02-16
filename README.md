@@ -24,7 +24,7 @@ Step 2. Add the dependency
 
 ```groovy
 dependencies {
-    implementation 'com.github.wilinz:AccessibilityX:0.0.2'
+    implementation 'com.github.wilinz:AccessibilityX:0.0.3'
 }
 ```
 	
