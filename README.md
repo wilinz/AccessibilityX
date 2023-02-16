@@ -1,7 +1,11 @@
 # AccessibilityX 无障碍扩展库
 [![](https://jitpack.io/v/wilinz/AccessibilityX.svg)](https://jitpack.io/#wilinz/AccessibilityX)
 
-## 使用方法：查看app模块示例
+## 使用方法：
+无障碍服务继承 此依赖库的 AccessibilityxService
+( Accessibility后面带有一个x )
+
+具体用法查看app模块示例
 
 ## Gradle引用:
 
