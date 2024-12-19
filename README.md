@@ -11,20 +11,20 @@
 
 Add it in your root build.gradle at the end of repositories:
 
-```groovy
+```kotlin
 allprojects {
     repositories {
-        //...
-        maven { url 'https://jitpack.io' }
+        // 其他仓库配置
+        maven("https://jitpack.io")
     }
 }
 ```
 
 Step 2. Add the dependency
 
-```groovy
+```kotlin
 dependencies {
-    implementation 'com.github.wilinz:AccessibilityX:0.0.3'
+    implementation("com.github.wilinz:AccessibilityX:0.0.3")
 }
 ```
 代码示例
