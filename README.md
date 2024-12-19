@@ -81,7 +81,7 @@ class MainActivity : ComponentActivity() {
         // 在这里放置您的方法，打开无障碍服务的设置页面
         Toast.makeText(this, "打开无障碍服务设置", Toast.LENGTH_SHORT).show()
         // 实际代码可能会跳转到无障碍设置页面，例如:
-        // startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
+        startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
     }
 }
 
